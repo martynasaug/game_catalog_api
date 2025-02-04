@@ -2,6 +2,8 @@ package lt.ca.javau11.model;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -29,11 +31,11 @@ public class User {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Review> reviews;
 
-    // Constructors
     public User() {}
 
     public User(String username, String password, Set<String> roles) {

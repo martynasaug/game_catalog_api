@@ -34,13 +34,13 @@ public class GameController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Game> updateGame(@PathVariable Long id, @RequestBody Game game) {
+    public ResponseEntity<Game> updateGame(@PathVariable Long id, @RequestBody Game gameDetails) {
         return gameService.findById(id)
                 .map(existingGame -> {
-                    existingGame.setTitle(game.getTitle());
-                    existingGame.setDescription(game.getDescription());
-                    existingGame.setPlatform(game.getPlatform());
-                    existingGame.setReleaseDate(game.getReleaseDate());
+                    existingGame.setTitle(gameDetails.getTitle());
+                    existingGame.setDescription(gameDetails.getDescription());
+                    existingGame.setPlatform(gameDetails.getPlatform());
+                    existingGame.setReleaseDate(gameDetails.getReleaseDate());
                     return ResponseEntity.ok(gameService.save(existingGame));
                 })
                 .orElse(ResponseEntity.notFound().build());

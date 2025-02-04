@@ -1,5 +1,7 @@
 package lt.ca.javau11.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -24,10 +26,12 @@ public class Review {
     @NotNull
     private int rating;
 
+    @JsonBackReference(value = "user-reviews")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @JsonBackReference(value = "game-reviews")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id", nullable = false)
     private Game game;

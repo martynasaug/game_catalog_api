@@ -55,15 +55,15 @@ public class WebSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/users/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/api/games/**").authenticated()
-                .requestMatchers("/api/reviews/**").authenticated()
-                .anyRequest().permitAll()
+            .authorizeHttpRequests(auth -> 
+                auth.requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/api/users/**").hasAuthority("ROLE_ADMIN")
+                    .requestMatchers("/api/games/**").authenticated()
+                    .requestMatchers("/api/reviews/**").authenticated()
+                    .anyRequest().permitAll()
             )
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

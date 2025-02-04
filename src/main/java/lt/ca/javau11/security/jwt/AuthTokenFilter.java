@@ -1,5 +1,7 @@
 package lt.ca.javau11.security.jwt;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +20,8 @@ import java.io.IOException;
 
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -40,7 +44,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            // Handle exceptions
+            logger.error("Cannot set user authentication: {}", e.getMessage());
         }
         filterChain.doFilter(request, response);
     }
@@ -48,7 +52,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
         if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7); 
+            return headerAuth.substring(7); // Remove "Bearer " prefix
         }
         return null;
     }

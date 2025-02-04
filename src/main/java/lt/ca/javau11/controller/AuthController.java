@@ -1,5 +1,7 @@
 package lt.ca.javau11.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +20,11 @@ import lt.ca.javau11.security.jwt.JwtResponse;
 import lt.ca.javau11.security.jwt.JwtUtils;
 import lt.ca.javau11.service.UserService;
 
-import java.util.logging.Logger;
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private static final Logger logger = Logger.getLogger(AuthController.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -47,7 +47,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
         try {
-            logger.info("Attempting to authenticate user: {}");
+            logger.info("Attempting to authenticate user: {}", user.getUsername());
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
             );
@@ -55,7 +55,7 @@ public class AuthController {
             String jwt = jwtUtils.generateToken((UserDetails) authentication.getPrincipal());
             return ResponseEntity.ok(new JwtResponse(jwt));
         } catch (Exception e) {
-            logger.severe("Login failed: " + e.getMessage());
+            logger.error("Login failed: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed: " + e.getMessage());
         }
     }

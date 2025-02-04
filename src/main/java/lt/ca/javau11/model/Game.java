@@ -3,6 +3,8 @@ package lt.ca.javau11.model;
 import java.time.LocalDate;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,11 +30,11 @@ public class Game {
     private String platform;
 
     private LocalDate releaseDate;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Review> reviews;
 
-    // Constructors
     public Game() {}
 
     public Game(String title, String description, String platform, LocalDate releaseDate) {
