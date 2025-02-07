@@ -55,7 +55,7 @@ public class AuthController {
             String jwt = jwtUtils.generateToken((UserDetails) authentication.getPrincipal());
             return ResponseEntity.ok(new JwtResponse(jwt));
         } catch (Exception e) {
-            logger.error("Login failed: {}", e.getMessage());
+            logger.error("Login failed for Game Vault: {}", e.getMessage()); // Change to Game Vault
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed: " + e.getMessage());
         }
     }

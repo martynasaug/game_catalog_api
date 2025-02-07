@@ -58,7 +58,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(auth -> 
                 auth.requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/api/users/**").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers("/api/games/**").authenticated()
+                    .requestMatchers("/api/games/**").permitAll()
                     .requestMatchers("/api/reviews/**").authenticated()
                     .anyRequest().permitAll()
             )
