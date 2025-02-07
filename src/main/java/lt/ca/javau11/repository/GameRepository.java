@@ -1,8 +1,7 @@
 package lt.ca.javau11.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import lt.ca.javau11.model.Game;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
