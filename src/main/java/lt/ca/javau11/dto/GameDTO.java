@@ -1,17 +1,32 @@
 package lt.ca.javau11.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 import java.util.Set;
 
 public class GameDTO {
-
     private Long id;
+
+    @NotBlank(message = "Title is required")
+    @Size(max = 100, message = "Title must not exceed 100 characters")
     private String title;
+
+    @NotBlank(message = "Description is required")
+    @Size(max = 500, message = "Description must not exceed 500 characters")
     private String description;
+
+    @NotBlank(message = "Platform is required")
     private String platform;
+
+    @NotNull(message = "Release date is required")
     private LocalDate releaseDate;
+
     private Set<ReviewDTO> reviews;
 
+    // Constructors
     public GameDTO() {}
 
     public GameDTO(Long id, String title, String description, String platform, LocalDate releaseDate, Set<ReviewDTO> reviews) {
@@ -23,6 +38,7 @@ public class GameDTO {
         this.reviews = reviews;
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }
