@@ -15,37 +15,37 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Check if the database is empty
-        if (gameRepository.count() == 0) {
+        // Check if the database is empty using the count() method
+        if (gameRepository.count() == 0) { // Ensure `count()` is available
             System.out.println("Seeding database with sample games...");
 
             // Add sample games
             Game game1 = new Game(
-                    "The Witcher 3",
-                    "An open-world RPG set in a medieval fantasy world.",
-                    "PC, PS4, Xbox One",
-                    LocalDate.of(2015, 5, 19),
-                    "/images/witcher3.jpg"
+                "The Witcher 3",
+                "An open-world RPG set in a medieval fantasy world.",
+                "PC, PS4, Xbox One",
+                LocalDate.of(2015, 5, 19),
+                "/images/witcher3.jpg"
             );
             Game game2 = new Game(
-                    "The Legend of Zelda: Breath of the Wild",
-                    "An action-adventure game set in an open world.",
-                    "Switch, Wii U",
-                    LocalDate.of(2017, 3, 3),
-                    "/images/zelda.jpg"
+                "The Legend of Zelda: Breath of the Wild",
+                "An action-adventure game set in an open world.",
+                "Switch, Wii U",
+                LocalDate.of(2017, 3, 3),
+                "/images/zelda.jpg"
             );
             Game game3 = new Game(
-                    "Cyberpunk 2077",
-                    "A cyberpunk-themed RPG with an expansive world.",
-                    "PC, PS4, Xbox One",
-                    LocalDate.of(2020, 12, 10),
-                    "/images/cyberpunk.jpg"
+                "Cyberpunk 2077",
+                "A cyberpunk-themed RPG with an expansive world.",
+                "PC, PS4, Xbox One",
+                LocalDate.of(2020, 12, 10),
+                "/images/cyberpunk.jpg"
             );
 
             // Save games to the database
-            gameRepository.save(game1);
-            gameRepository.save(game2);
-            gameRepository.save(game3);
+            gameRepository.save(game1); // Ensure `save` is available
+            gameRepository.save(game2); // Ensure `save` is available
+            gameRepository.save(game3); // Ensure `save` is available
 
             System.out.println("Sample games added successfully!");
         } else {

@@ -8,7 +8,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,9 +18,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import lt.ca.javau11.security.jwt.AuthTokenFilter;
 
 @Configuration
-@EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
+
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -52,17 +51,19 @@ public class WebSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> 
-                auth.requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers("/api/users/**").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers("/api/games/**").permitAll() // Make games endpoint publicly accessible
-                    .requestMatchers("/api/reviews/**").authenticated()
-                    .anyRequest().permitAll()
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll() // Allow login and register
+                .requestMatchers("/api/games").permitAll() // Allow public access to games list
+                .requestMatchers("/api/games/**").permitAll() // Allow public access to game details
+                .requestMatchers("/api/reviews").permitAll() // Allow public access to reviews
+                .requestMatchers("/api/reviews/**").authenticated() // Require auth for submitting reviews
+                .anyRequest().permitAll()
             )
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }
