@@ -51,18 +51,20 @@ public class WebSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() // Allow login and register
-                .requestMatchers("/api/games").permitAll() // Allow public access to games list
-                .requestMatchers("/api/games/**").permitAll() // Allow public access to game details
-                .requestMatchers("/api/reviews").permitAll() // Allow public access to reviews
-                .requestMatchers("/api/reviews/**").authenticated() // Require auth for submitting reviews
-                .anyRequest().permitAll()
-            )
-            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+           .authorizeHttpRequests(auth -> auth
+               .requestMatchers("/api/auth/**").permitAll() // Allow login and register
+               .requestMatchers("/api/games").permitAll() // Allow public access to games list
+               .requestMatchers("/api/games/**").permitAll() // Allow public access to game details
+               .requestMatchers("/api/games/add").hasRole("ADMIN") // Restrict add game to admin
+               .requestMatchers("/api/games/*/edit").hasRole("ADMIN") // Restrict edit game to admin
+               .requestMatchers("/api/reviews").permitAll() // Allow public access to reviews
+               .requestMatchers("/api/reviews/**").authenticated() // Require auth for submitting reviews
+               .anyRequest().permitAll()
+           )
+           .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+           .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+           .authenticationProvider(authenticationProvider())
+           .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
