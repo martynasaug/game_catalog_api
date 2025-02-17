@@ -42,6 +42,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                logger.debug("Authenticated user: {}", username);
+            } else {
+                logger.debug("No valid JWT token found.");
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e.getMessage());
