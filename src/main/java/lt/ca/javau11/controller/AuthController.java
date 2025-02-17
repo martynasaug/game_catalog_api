@@ -1,5 +1,8 @@
 package lt.ca.javau11.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lt.ca.javau11.model.User;
-import lt.ca.javau11.security.jwt.JwtResponse;
 import lt.ca.javau11.security.jwt.JwtUtils;
+import lt.ca.javau11.service.CustomUserDetailsService.CustomUserDetails;
 import lt.ca.javau11.service.UserService;
 
 @RestController
@@ -53,9 +56,20 @@ public class AuthController {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtils.generateToken((UserDetails) authentication.getPrincipal());
-            return ResponseEntity.ok(new JwtResponse(jwt));
+
+            // Extract user details from authentication
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            // Return both the token and user details
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", jwt);
+            response.put("id", userDetails.getId()); // Include userId in the response
+            response.put("username", userDetails.getUsername());
+            response.put("roles", jwtUtils.getRolesFromJwtToken(jwt));
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            logger.error("Login failed for Game Vault: {}", e.getMessage()); // Change to Game Vault
+            logger.error("Login failed for Game Vault: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed: " + e.getMessage());
         }
     }

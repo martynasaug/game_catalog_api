@@ -1,3 +1,5 @@
+// src/main/java/lt/ca/javau11/service/ReviewService.java
+
 package lt.ca.javau11.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +45,23 @@ public class ReviewService {
 
     // Create and save a new review
     public Review save(ReviewDTO reviewDTO) {
-        User user = userRepository.findById(reviewDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Game game = gameRepository.findById(reviewDTO.getGameId())
-                .orElseThrow(() -> new RuntimeException("Game not found"));
+        Optional<User> optionalUser = userRepository.findById(reviewDTO.getUserId());
+        Optional<Game> optionalGame = gameRepository.findById(reviewDTO.getGameId());
+
+        if (!optionalUser.isPresent()) {
+            throw new RuntimeException("User not found");
+        }
+        if (!optionalGame.isPresent()) {
+            throw new RuntimeException("Game not found");
+        }
+
+        User user = optionalUser.get(); // Ensure the user is fetched correctly
+        Game game = optionalGame.get();
 
         Review review = new Review();
         review.setComment(reviewDTO.getComment());
         review.setRating(reviewDTO.getRating());
-        review.setUser(user);
+        review.setUser(user); // Associate the review with the user
         review.setGame(game);
 
         return reviewRepository.save(review);
