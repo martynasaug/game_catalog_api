@@ -1,3 +1,5 @@
+// src/main/java/lt/ca/javau11/controller/ReviewController.java
+
 package lt.ca.javau11.controller;
 
 import org.slf4j.Logger;
@@ -5,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import lt.ca.javau11.dto.ReviewDTO;
 import lt.ca.javau11.model.Review;
 import lt.ca.javau11.service.ReviewService;
@@ -41,39 +43,39 @@ public class ReviewController {
 
     // Fetch review by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Review> getReviewById(@PathVariable Long id) {
+    public ResponseEntity<Optional<Review>> getReviewById(@PathVariable Long id) {
         logger.info("Fetching review with ID: {}", id);
         Optional<Review> review = reviewService.findById(id);
-        return review.map(ResponseEntity::ok)
-                     .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(review);
     }
 
     // Create a new review
     @PostMapping
     public ResponseEntity<Review> createReview(@Valid @RequestBody ReviewDTO reviewDTO) {
-        logger.info("Creating new review for game ID: {} by user ID: {}", reviewDTO.getGameId(), reviewDTO.getUserId());
+        logger.info("Incoming request to create review: {}", reviewDTO);
         Review savedReview = reviewService.save(reviewDTO);
+        logger.info("Review created successfully: {}", savedReview);
         return ResponseEntity.ok(savedReview);
     }
 
     // Update an existing review
     @PutMapping("/{id}")
-    public ResponseEntity<Review> updateReview(@PathVariable Long id, @Valid @RequestBody ReviewDTO reviewDTO) {
-        logger.info("Updating review ID: {}", id);
+    public ResponseEntity<Optional<Review>> updateReview(@PathVariable Long id, @Valid @RequestBody ReviewDTO reviewDTO) {
+        logger.info("Incoming request to update review with ID: {}", id);
         Optional<Review> updatedReview = reviewService.updateReview(id, reviewDTO);
-        return updatedReview.map(ResponseEntity::ok)
-                            .orElseGet(() -> ResponseEntity.notFound().build());
+        if (updatedReview.isPresent()) {
+            logger.info("Review updated successfully: {}", updatedReview.get());
+        } else {
+            logger.error("Failed to update review with ID: {}", id);
+        }
+        return ResponseEntity.ok(updatedReview);
     }
 
     // Delete a review
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
-        logger.info("Deleting review ID: {}", id);
-        if (reviewService.findById(id).isPresent()) {
-            reviewService.delete(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        logger.info("Deleting review with ID: {}", id);
+        reviewService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

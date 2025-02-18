@@ -1,9 +1,7 @@
 // src/main/java/lt/ca/javau11/model/Review.java
-
 package lt.ca.javau11.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -21,7 +19,7 @@ public class Review {
     private int rating;
 
     @JsonBackReference(value = "user-reviews")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) // Changed from LAZY to EAGER
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -81,7 +79,7 @@ public class Review {
         this.game = game;
     }
 
-    @Transient // Exclude this field from the database
+    @Transient
     public String getUsername() {
         return user != null ? user.getUsername() : "Unknown User";
     }

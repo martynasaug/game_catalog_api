@@ -2,6 +2,9 @@
 
 package lt.ca.javau11.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,52 +12,55 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import lt.ca.javau11.model.User;
-import lt.ca.javau11.repository.UserRepository;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lt.ca.javau11.model.User;
+import lt.ca.javau11.repository.UserRepository;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.info("Loading user by username: {}", username);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+
+        // Map roles to GrantedAuthorities
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        // Use the authorities explicitly here (optional, for debugging purposes)
+        logger.debug("User authorities: {}", authorities);
 
         return new CustomUserDetails(user);
     }
 
     public static class CustomUserDetails extends org.springframework.security.core.userdetails.User implements Serializable {
-        private static final long serialVersionUID = 1L; // Add this line
+
+        private static final long serialVersionUID = 1L; // Resolve serialization warnings
 
         private final Long id;
-        private final List<String> roles;
 
         public CustomUserDetails(User user) {
             super(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
             this.id = user.getId();
-            this.roles = user.getRoles().stream().toList();
         }
 
         public Long getId() {
             return id;
         }
 
-        public List<String> getRoles() {
-            return roles;
-        }
-
-        private static List<GrantedAuthority> mapRolesToAuthorities(Set<String> roles) {
+        private static List<SimpleGrantedAuthority> mapRolesToAuthorities(Set<String> roles) {
             return roles.stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
