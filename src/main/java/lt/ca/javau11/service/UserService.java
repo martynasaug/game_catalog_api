@@ -3,15 +3,12 @@ package lt.ca.javau11.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import lt.ca.javau11.model.User;
 import lt.ca.javau11.repository.UserRepository;
-
 import java.util.Optional;
 
 @Service
 public class UserService {
-
     @Autowired
     private UserRepository userRepository;
 
@@ -29,5 +26,10 @@ public class UserService {
     public User register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+
+    public boolean isCurrentUserAdmin(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        return user.map(u -> u.getRoles().contains("ROLE_ADMIN")).orElse(false);
     }
 }

@@ -66,7 +66,6 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll() // Allow login and register
                 .requestMatchers("/api/games").permitAll() // Allow public access to games list
                 .requestMatchers("/api/games/**").permitAll() // Allow public access to game details
-                .requestMatchers("/api/reviews").permitAll() // Allow public access to reviews
                 .requestMatchers("/api/reviews/by-game/**").permitAll() // Allow public access to reviews by game
                 .requestMatchers("/api/reviews/**").authenticated() // Require auth for submitting reviews
                 .anyRequest().permitAll()

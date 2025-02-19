@@ -1,33 +1,33 @@
-// src/main/java/lt/ca/javau11/controller/ReviewController.java
-
 package lt.ca.javau11.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.validation.Valid;
 import lt.ca.javau11.dto.ReviewDTO;
 import lt.ca.javau11.model.Review;
 import lt.ca.javau11.service.ReviewService;
-
+import lt.ca.javau11.service.UserService;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/reviews")
 public class ReviewController {
-
     private static final Logger logger = LoggerFactory.getLogger(ReviewController.class);
 
     @Autowired
     private ReviewService reviewService;
 
-    // Fetch all reviews
+    @Autowired
+    private UserService userService;
+
+    // Fetch all reviews. Not used, maybe will use later
     @GetMapping
-    public ResponseEntity<List<Review>> getAllReviews() {
+    public ResponseEntity<List<Review>> getAllReviews() { 
         logger.info("Fetching all reviews...");
         List<Review> reviews = reviewService.findAll();
         return ResponseEntity.ok(reviews);
@@ -35,13 +35,13 @@ public class ReviewController {
 
     // Fetch reviews by gameId
     @GetMapping("/by-game/{gameId}")
-    public ResponseEntity<List<Review>> getReviewsByGameId(@PathVariable Long gameId) {
+    public ResponseEntity<List<Review>> getReviewsByGameId(@PathVariable Long gameId) { 
         logger.info("Fetching reviews for game ID: {}", gameId);
         List<Review> reviews = reviewService.findReviewsByGameId(gameId);
         return ResponseEntity.ok(reviews);
     }
 
-    // Fetch review by ID
+    // Fetch review by ID. Not used, maybe will use later
     @GetMapping("/{id}")
     public ResponseEntity<Optional<Review>> getReviewById(@PathVariable Long id) {
         logger.info("Fetching review with ID: {}", id);
@@ -75,7 +75,24 @@ public class ReviewController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         logger.info("Deleting review with ID: {}", id);
-        reviewService.delete(id);
-        return ResponseEntity.noContent().build();
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean isAdmin = userService.isCurrentUserAdmin(username);
+
+        try {
+            // Check if the user is authorized to delete the review
+            if (!isAdmin && !reviewService.isReviewOwner(id, username)) {
+                logger.warn("User {} attempted to delete review {} without permission", username, id);
+                return ResponseEntity.status(403).build(); // Forbidden
+            }
+
+            // Perform the deletion
+            reviewService.delete(id);
+            logger.info("Review with ID {} deleted successfully by user {}", id, username);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            logger.error("Error while deleting review with ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(500).build(); // Internal Server Error
+        }
     }
 }

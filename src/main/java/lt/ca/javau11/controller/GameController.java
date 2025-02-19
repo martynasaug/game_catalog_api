@@ -34,6 +34,20 @@ public class GameController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+    @GetMapping("/featured")
+    public ResponseEntity<List<Game>> getFeaturedGames() {
+        // For demonstration, let's assume featured games are the first 3 games in the list
+        List<Game> featuredGames = gameService.findAll().subList(0, Math.min(3, gameService.findAll().size()));
+        return ResponseEntity.ok(featuredGames);
+    }
+
+    @GetMapping("/latest")
+    public ResponseEntity<List<Game>> getLatestGames() {
+        // For demonstration, let's assume latest games are the last 3 games in the list
+        List<Game> allGames = gameService.findAll();
+        List<Game> latestGames = allGames.subList(Math.max(0, allGames.size() - 3), allGames.size());
+        return ResponseEntity.ok(latestGames);
+    }
 
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<Game> createGame(
