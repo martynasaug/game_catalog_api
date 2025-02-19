@@ -3,9 +3,9 @@ package lt.ca.javau11.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import lt.ca.javau11.model.Game;
 import lt.ca.javau11.repository.GameRepository;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +15,6 @@ import java.util.Optional;
 
 @Service
 public class GameService {
-
     @Autowired
     private GameRepository gameRepository;
 
@@ -31,7 +30,10 @@ public class GameService {
 
     // Save a new game or update an existing one
     public Game save(Game game, MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()) {
+        if (file == null) {
+            throw new IllegalArgumentException("File cannot be null");
+        }
+        if (!file.isEmpty()) {
             byte[] bytes = file.getBytes();
             Path path = Paths.get("src/main/resources/static/images/" + file.getOriginalFilename());
             Files.write(path, bytes);
@@ -42,7 +44,10 @@ public class GameService {
 
     // Update an existing game
     public Game update(Game game, MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()) {
+        if (file == null) {
+            throw new IllegalArgumentException("File cannot be null");
+        }
+        if (!file.isEmpty()) {
             byte[] bytes = file.getBytes();
             Path path = Paths.get("src/main/resources/static/images/" + file.getOriginalFilename());
             Files.write(path, bytes);
