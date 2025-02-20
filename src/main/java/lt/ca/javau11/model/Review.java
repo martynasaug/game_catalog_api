@@ -1,4 +1,3 @@
-// src/main/java/lt/ca/javau11/model/Review.java
 package lt.ca.javau11.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -28,7 +27,6 @@ public class Review {
     @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
-    // Constructors
     public Review() {}
 
     public Review(String comment, int rating, User user, Game game) {
@@ -38,7 +36,6 @@ public class Review {
         this.game = game;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

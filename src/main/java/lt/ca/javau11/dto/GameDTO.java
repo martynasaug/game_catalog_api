@@ -26,7 +26,6 @@ public class GameDTO {
 
     private Set<ReviewDTO> reviews;
 
-    // Constructors
     public GameDTO() {}
 
     public GameDTO(Long id, String title, String description, String platform, LocalDate releaseDate, Set<ReviewDTO> reviews) {
@@ -38,7 +37,6 @@ public class GameDTO {
         this.reviews = reviews;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

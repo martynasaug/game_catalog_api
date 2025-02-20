@@ -1,4 +1,3 @@
-// src/main/java/lt/ca/javau11/model/Game.java
 package lt.ca.javau11.model;
 
 import java.time.LocalDate;
@@ -42,7 +41,6 @@ public class Game {
         this.imageUrl = imageUrl;
     }
     
-    // Getters and Setters
     public Long getId() {
         return id;
     }

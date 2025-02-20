@@ -17,7 +17,6 @@ public class ReviewDTO {
     @NotNull(message = "Game ID is required")
     private Long gameId;
 
-    // Getters and Setters
     public String getComment() {
         return comment;
     }

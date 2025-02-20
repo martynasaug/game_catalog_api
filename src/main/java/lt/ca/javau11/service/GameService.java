@@ -18,12 +18,12 @@ public class GameService {
     @Autowired
     private GameRepository gameRepository;
 
-    // Find all games - Parameterized as List<Game>
+    // Find all games 
     public List<Game> findAll() {
         return gameRepository.findAll();
     }
 
-    // Find a game by ID - Parameterized as Optional<Game>
+    // Find a game by ID
     public Optional<Game> findById(Long id) {
         return gameRepository.findById(id);
     }

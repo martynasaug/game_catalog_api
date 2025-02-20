@@ -1,5 +1,3 @@
-// src/main/java/lt/ca/javau11/controller/AuthController.java
-
 package lt.ca.javau11.controller;
 
 import org.slf4j.Logger;
