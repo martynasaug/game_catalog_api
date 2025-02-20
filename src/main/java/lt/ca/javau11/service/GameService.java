@@ -4,21 +4,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import lt.ca.javau11.model.Game;
+import lt.ca.javau11.model.Review;
 import lt.ca.javau11.repository.GameRepository;
+import lt.ca.javau11.repository.ReviewRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class GameService {
     @Autowired
     private GameRepository gameRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    
+ // Find all games with sorting
+    public List<Game> findAll(String sortBy) {
+        List<Game> games = gameRepository.findAll();
 
-    // Find all games 
+        switch (sortBy) {
+            case "newest":
+                return games.stream().sorted(Comparator.comparing(Game::getReleaseDate).reversed()).collect(Collectors.toList());
+            case "oldest":
+                return games.stream().sorted(Comparator.comparing(Game::getReleaseDate)).collect(Collectors.toList());
+            case "highestRating":
+                return games.stream().sorted(Comparator.comparingDouble(this::calculateAverageRating).reversed()).collect(Collectors.toList());
+            default:
+                return games;
+        }
+    }
+    
+ // Find all games without sorting
     public List<Game> findAll() {
         return gameRepository.findAll();
     }
@@ -60,4 +82,12 @@ public class GameService {
     public void delete(Long id) {
         gameRepository.deleteById(id);
     }
+ // Calculate average rating for a game
+    private double calculateAverageRating(Game game) {
+        List<Review> reviews = reviewRepository.findByGameId(game.getId());
+        if (reviews.isEmpty()) return 0.0;
+        double totalRating = reviews.stream().mapToInt(Review::getRating).sum();
+        return totalRating / reviews.size();
+    }
+    
 }
