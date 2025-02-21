@@ -41,29 +41,57 @@ class ReviewServiceTest {
     @Test
     void findAll() {
         Review review = new Review();
+        review.setComment("Amazing game!");
+        review.setRating(5);
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUser");
+        review.setUser(user);
+
+        Game game = new Game();
+        game.setId(1L);
+        game.setTitle("Test Game");
+        review.setGame(game);
+
         when(reviewRepository.findAll()).thenReturn(List.of(review));
 
-        List<Review> reviews = reviewService.findAll();
+        List<ReviewDTO> reviews = reviewService.findAll();
 
         assertNotNull(reviews);
         assertEquals(1, reviews.size());
+        assertEquals("Amazing game!", reviews.get(0).getComment());
     }
 
     @Test
     void findById_Found() {
         Review review = new Review();
+        review.setComment("Awesome game!");
+        review.setRating(4);
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUser");
+        review.setUser(user);
+
+        Game game = new Game();
+        game.setId(1L);
+        game.setTitle("Test Game");
+        review.setGame(game);
+
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
 
-        Optional<Review> foundReview = reviewService.findById(1L);
+        Optional<ReviewDTO> foundReview = reviewService.findById(1L);
 
         assertTrue(foundReview.isPresent());
+        assertEquals("Awesome game!", foundReview.get().getComment());
     }
 
     @Test
     void findById_NotFound() {
         when(reviewRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Optional<Review> foundReview = reviewService.findById(1L);
+        Optional<ReviewDTO> foundReview = reviewService.findById(1L);
 
         assertFalse(foundReview.isPresent());
     }
@@ -77,15 +105,30 @@ class ReviewServiceTest {
         reviewDTO.setGameId(1L);
 
         User user = new User();
+        user.setId(1L);
+        user.setUsername("testUser");
+
         Game game = new Game();
+        game.setId(1L);
+        game.setTitle("Test Game");
+
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
 
         Review review = new Review();
+        review.setComment(reviewDTO.getComment());
+        review.setRating(reviewDTO.getRating());
+        review.setUser(user);
+        review.setGame(game);
+
         when(reviewRepository.save(any(Review.class))).thenReturn(review);
 
-        Review savedReview = reviewService.save(reviewDTO);
+        ReviewDTO savedReview = reviewService.save(reviewDTO);
 
         assertNotNull(savedReview);
+        assertEquals("Great game!", savedReview.getComment());
+        assertEquals(5, savedReview.getRating());
+        assertEquals("Test Game", savedReview.getGameTitle());
+        assertEquals("testUser", savedReview.getUsername());
     }
 }
