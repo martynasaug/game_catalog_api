@@ -13,6 +13,7 @@ import lt.ca.javau11.repository.ReviewRepository;
 import lt.ca.javau11.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReviewService {
@@ -28,25 +29,30 @@ public class ReviewService {
     private GameRepository gameRepository;
 
     // Find all reviews. Not used, maybe will use later
-    public List<Review> findAll() {
+    public List<ReviewDTO> findAll() {
         logger.info("Fetching all reviews...");
-        return reviewRepository.findAll();
+        return reviewRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     // Find review by ID. Not used, maybe will use later
-    public Optional<Review> findById(Long id) {
+    public Optional<ReviewDTO> findById(Long id) {
         logger.info("Fetching review with ID: {}", id);
-        return reviewRepository.findById(id);
+        return reviewRepository.findById(id)
+                .map(this::convertToDTO);
     }
 
     // Find reviews by game ID
-    public List<Review> findReviewsByGameId(Long gameId) {
+    public List<ReviewDTO> findReviewsByGameId(Long gameId) {
         logger.info("Fetching reviews for game ID: {}", gameId);
-        return reviewRepository.findByGameId(gameId);
+        return reviewRepository.findByGameId(gameId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     // Create and save a new review
-    public Review save(ReviewDTO reviewDTO) {
+    public ReviewDTO save(ReviewDTO reviewDTO) {
         logger.info("Creating new review for game ID: {} by user ID: {}", reviewDTO.getGameId(), reviewDTO.getUserId());
 
         Optional<User> optionalUser = userRepository.findById(reviewDTO.getUserId());
@@ -71,18 +77,21 @@ public class ReviewService {
         review.setUser(user); // Associate the review with the user
         review.setGame(game); // Associate the review with the game
 
+        Review savedReview = reviewRepository.save(review);
         logger.info("Review created successfully for user: {} and game: {}", user.getUsername(), game.getTitle());
-        return reviewRepository.save(review);
+
+        return convertToDTO(savedReview);
     }
 
     // Update an existing review
-    public Optional<Review> updateReview(Long id, ReviewDTO reviewDTO) {
+    public Optional<ReviewDTO> updateReview(Long id, ReviewDTO reviewDTO) {
         logger.info("Updating review with ID: {}", id);
         return reviewRepository.findById(id).map(existingReview -> {
             existingReview.setComment(reviewDTO.getComment());
             existingReview.setRating(reviewDTO.getRating());
+            Review updatedReview = reviewRepository.save(existingReview);
             logger.info("Review updated successfully with ID: {}", id);
-            return reviewRepository.save(existingReview);
+            return convertToDTO(updatedReview);
         });
     }
 
@@ -101,9 +110,23 @@ public class ReviewService {
         }
         return review.get().getUser().getUsername().equals(username);
     }
- // Find reviews by user ID
-    public List<Review> findReviewsByUserId(Long userId) {
+
+    // Find reviews by user ID
+    public List<ReviewDTO> findReviewsByUserId(Long userId) {
         logger.info("Fetching reviews for user ID: {}", userId);
-        return reviewRepository.findByUserId(userId);
+        return reviewRepository.findByUserId(userId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private ReviewDTO convertToDTO(Review review) {
+        ReviewDTO dto = new ReviewDTO();
+        dto.setComment(review.getComment());
+        dto.setRating(review.getRating());
+        dto.setUserId(review.getUser().getId());
+        dto.setUsername(review.getUser().getUsername());
+        dto.setGameId(review.getGame().getId());
+        dto.setGameTitle(review.getGame().getTitle());
+        return dto;
     }
 }

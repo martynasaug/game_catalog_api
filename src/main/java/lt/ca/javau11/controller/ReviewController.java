@@ -8,7 +8,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import lt.ca.javau11.dto.ReviewDTO;
-import lt.ca.javau11.model.Review;
 import lt.ca.javau11.service.ReviewService;
 import lt.ca.javau11.service.UserService;
 import java.util.List;
@@ -27,42 +26,42 @@ public class ReviewController {
 
     // Fetch all reviews. Not used, maybe will use later
     @GetMapping
-    public ResponseEntity<List<Review>> getAllReviews() { 
+    public ResponseEntity<List<ReviewDTO>> getAllReviews() { 
         logger.info("Fetching all reviews...");
-        List<Review> reviews = reviewService.findAll();
+        List<ReviewDTO> reviews = reviewService.findAll();
         return ResponseEntity.ok(reviews);
     }
 
     // Fetch reviews by gameId
     @GetMapping("/by-game/{gameId}")
-    public ResponseEntity<List<Review>> getReviewsByGameId(@PathVariable Long gameId) { 
+    public ResponseEntity<List<ReviewDTO>> getReviewsByGameId(@PathVariable Long gameId) { 
         logger.info("Fetching reviews for game ID: {}", gameId);
-        List<Review> reviews = reviewService.findReviewsByGameId(gameId);
+        List<ReviewDTO> reviews = reviewService.findReviewsByGameId(gameId);
         return ResponseEntity.ok(reviews);
     }
 
     // Fetch review by ID. Not used, maybe will use later
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Review>> getReviewById(@PathVariable Long id) {
+    public ResponseEntity<Optional<ReviewDTO>> getReviewById(@PathVariable Long id) {
         logger.info("Fetching review with ID: {}", id);
-        Optional<Review> review = reviewService.findById(id);
+        Optional<ReviewDTO> review = reviewService.findById(id);
         return ResponseEntity.ok(review);
     }
 
     // Create a new review
     @PostMapping
-    public ResponseEntity<Review> createReview(@Valid @RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<ReviewDTO> createReview(@Valid @RequestBody ReviewDTO reviewDTO) {
         logger.info("Incoming request to create review: {}", reviewDTO);
-        Review savedReview = reviewService.save(reviewDTO);
+        ReviewDTO savedReview = reviewService.save(reviewDTO);
         logger.info("Review created successfully: {}", savedReview);
         return ResponseEntity.ok(savedReview);
     }
 
     // Update an existing review
     @PutMapping("/{id}")
-    public ResponseEntity<Optional<Review>> updateReview(@PathVariable Long id, @Valid @RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<Optional<ReviewDTO>> updateReview(@PathVariable Long id, @Valid @RequestBody ReviewDTO reviewDTO) {
         logger.info("Incoming request to update review with ID: {}", id);
-        Optional<Review> updatedReview = reviewService.updateReview(id, reviewDTO);
+        Optional<ReviewDTO> updatedReview = reviewService.updateReview(id, reviewDTO);
         if (updatedReview.isPresent()) {
             logger.info("Review updated successfully: {}", updatedReview.get());
         } else {
@@ -94,5 +93,10 @@ public class ReviewController {
             logger.error("Error while deleting review with ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(500).build(); // Internal Server Error
         }
+    }
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<List<ReviewDTO>> getReviewsByUserId(@PathVariable Long userId) {
+        List<ReviewDTO> reviews = reviewService.findReviewsByUserId(userId);
+        return ResponseEntity.ok(reviews);
     }
 }

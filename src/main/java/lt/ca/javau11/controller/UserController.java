@@ -20,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lt.ca.javau11.dto.ProfileDTO;
-import lt.ca.javau11.model.Review;
+import lt.ca.javau11.dto.ReviewDTO;
 import lt.ca.javau11.model.User;
 import lt.ca.javau11.service.ReviewService;
 import lt.ca.javau11.service.UserService;
@@ -31,7 +31,7 @@ public class UserController {
 
  @Autowired
  private UserService userService;
-
+ 
  @Autowired
  private ReviewService reviewService;
 
@@ -64,10 +64,11 @@ public class UserController {
              Map.of("error", "Username or email already exists"));
      }
  }
-
  @GetMapping("/{userId}/reviews")
- public ResponseEntity<List<Review>> getUserReviews(@PathVariable Long userId) {
-     List<Review> reviews = reviewService.findReviewsByUserId(userId);
+ public ResponseEntity<List<ReviewDTO>> getUserReviews(@PathVariable Long userId) {
+     List<ReviewDTO> reviews = reviewService.findReviewsByUserId(userId);
      return ResponseEntity.ok(reviews);
  }
+
+ 
 }

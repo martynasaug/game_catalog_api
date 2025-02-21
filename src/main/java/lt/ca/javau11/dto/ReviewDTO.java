@@ -17,6 +17,9 @@ public class ReviewDTO {
     @NotNull(message = "Game ID is required")
     private Long gameId;
 
+    private String username;
+    private String gameTitle;
+
     public String getComment() {
         return comment;
     }
@@ -47,5 +50,21 @@ public class ReviewDTO {
 
     public void setGameId(Long gameId) {
         this.gameId = gameId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getGameTitle() {
+        return gameTitle;
+    }
+
+    public void setGameTitle(String gameTitle) {
+        this.gameTitle = gameTitle;
     }
 }

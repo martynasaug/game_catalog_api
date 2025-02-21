@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "reviews")
 public class Review {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,7 +17,7 @@ public class Review {
     private int rating;
 
     @JsonBackReference(value = "user-reviews")
-    @ManyToOne(fetch = FetchType.EAGER) // Changed from LAZY to EAGER
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -74,10 +73,5 @@ public class Review {
 
     public void setGame(Game game) {
         this.game = game;
-    }
-
-    @Transient
-    public String getUsername() {
-        return user != null ? user.getUsername() : "Unknown User";
     }
 }

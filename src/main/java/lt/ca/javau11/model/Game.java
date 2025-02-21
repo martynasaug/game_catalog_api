@@ -25,7 +25,7 @@ public class Game {
     private String description;
     private String platform;
     private LocalDate releaseDate;
-    private String imageUrl; // Add this field
+    private String imageUrl; 
     
     @JsonIgnore
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)

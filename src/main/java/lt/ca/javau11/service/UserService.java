@@ -44,7 +44,6 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            
             user.setUsername(profileDTO.getUsername());
             user.setEmail(profileDTO.getEmail());
             user.setBio(profileDTO.getBio());
