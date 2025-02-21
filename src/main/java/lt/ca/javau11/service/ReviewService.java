@@ -101,4 +101,9 @@ public class ReviewService {
         }
         return review.get().getUser().getUsername().equals(username);
     }
+ // Find reviews by user ID
+    public List<Review> findReviewsByUserId(Long userId) {
+        logger.info("Fetching reviews for user ID: {}", userId);
+        return reviewRepository.findByUserId(userId);
+    }
 }

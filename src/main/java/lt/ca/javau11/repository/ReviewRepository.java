@@ -12,6 +12,8 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByGameId(Long gameId);
+    
+    List<Review> findByUserId(Long userId);
 
     @Query("SELECT u FROM User u WHERE u.id = :id")
     Optional<User> findUserById(@Param("id") Long id);
